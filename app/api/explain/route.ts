@@ -2,8 +2,6 @@ import { z } from 'zod';
 import { explainVerdict } from '@/lib/llm/explain';
 import { checkRateLimit } from '@/lib/llm/rate-limit';
 
-export const runtime = 'nodejs';
-
 const SignalSchema = z
   .object({
     id: z.string().min(1).max(100),
