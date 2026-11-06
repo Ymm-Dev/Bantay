@@ -29,10 +29,21 @@ describe('extractTextFromImage', () => {
   });
 
   it('surfaces a readable error when OCR fails', async () => {
-    vi.mocked(createWorker).mockRejectedValueOnce(new Error('boom'));
+    vi.mocked(createWorker)
+      .mockRejectedValueOnce(new Error('boom'))
+      .mockRejectedValueOnce(new Error('fallback boom'));
 
     await expect(extractTextFromImage(file())).rejects.toThrow(
       'Hindi mabasa ang screenshot.',
     );
+  });
+
+  it('falls back to the default worker when local assets are unavailable', async () => {
+    vi.mocked(createWorker).mockRejectedValueOnce(new Error('local assets missing'));
+
+    await expect(extractTextFromImage(file())).resolves.toBe(
+      'BDO: verify at bdo-online.top',
+    );
+    expect(createWorker).toHaveBeenCalledTimes(2);
   });
 });

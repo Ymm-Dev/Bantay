@@ -9,11 +9,17 @@ export async function extractTextFromImage(file: File): Promise<string> {
   try {
     const { createWorker } = await import('tesseract.js');
 
-    worker = (await createWorker('eng', 1, {
-      workerPath: '/tesseract/worker.min.js',
-      corePath: '/tesseract',
-      langPath: '/tesseract',
-    })) as unknown as OcrWorker;
+    try {
+      worker = (await createWorker('eng', 1, {
+        workerPath: '/tesseract/worker.min.js',
+        corePath: '/tesseract',
+        langPath: '/tesseract',
+      })) as unknown as OcrWorker;
+    } catch {
+      // Local assets can be missing if the build-time download failed.
+      // Fall back to the default worker (CDN) instead of failing outright.
+      worker = (await createWorker('eng')) as unknown as OcrWorker;
+    }
 
     const { data } = await worker.recognize(file);
     return data.text.trim();

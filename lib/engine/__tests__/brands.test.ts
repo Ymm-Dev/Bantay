@@ -22,6 +22,12 @@ describe('matchBrand', () => {
     expect(m('bdo.com.ph.evil.xyz')).toEqual({ alias: 'bdo', kind: 'subdomain' });
   });
 
+  it('flags a brand embedded anywhere in the SLD', () => {
+    expect(m('fakebdo.com')).toEqual({ alias: 'bdo', kind: 'lookalike' });
+    expect(m('mygcashlogin.com')).toEqual({ alias: 'gcash', kind: 'lookalike' });
+    expect(m('xgcashphx.com')).toEqual({ alias: 'gcash', kind: 'lookalike' });
+  });
+
   it('returns null for unrelated domains', () => {
     expect(m('example.com')).toBeNull();
   });

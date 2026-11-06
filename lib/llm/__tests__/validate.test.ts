@@ -13,4 +13,11 @@ describe('isSafeExplanation', () => {
   it('accepts a plain Taglish explanation', () => {
     expect(isSafeExplanation('Mukhang scam ito. Huwag i-click ang link.')).toBe(true);
   });
+
+  it('rejects zero-sentence output, bare http tokens, and markdown links', () => {
+    expect(isSafeExplanation('hello')).toBe(false);
+    expect(isSafeExplanation('ok lang')).toBe(false);
+    expect(isSafeExplanation('Visit http now')).toBe(false);
+    expect(isSafeExplanation('Tingnan ang [link](evil.com)')).toBe(false);
+  });
 });

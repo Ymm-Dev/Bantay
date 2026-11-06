@@ -100,8 +100,7 @@ export function matchBrand(url: ParsedUrl): BrandMatch | null {
       return { alias, kind: 'lookalike' };
     }
 
-    const suffixLength = joined.length - alias.length;
-    if (joined.startsWith(alias) && suffixLength > 0 && suffixLength <= 3) {
+    if (joined.includes(alias)) {
       return { alias, kind: 'lookalike' };
     }
   }
