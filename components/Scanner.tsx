@@ -16,6 +16,7 @@ export function Scanner() {
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>('paste');
+  const [initialExplanation, setInitialExplanation] = useState<string | undefined>();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -28,20 +29,23 @@ export function Scanner() {
     }
 
     setError(null);
+    setInitialExplanation(undefined);
     setVerdict(analyze(trimmed));
   }
 
-  function handleExample(exampleText: string) {
+  function handleExample(exampleText: string, explanation?: string) {
     const trimmed = exampleText.slice(0, MAX_LENGTH);
     setText(trimmed);
     setError(null);
     setTab('paste');
+    setInitialExplanation(explanation);
     setVerdict(analyze(trimmed));
   }
 
   function handleScreenshotText(ocrText: string) {
     setText(ocrText.slice(0, MAX_LENGTH));
     setError(null);
+    setInitialExplanation(undefined);
     setTab('paste');
   }
 
@@ -93,7 +97,10 @@ export function Scanner() {
           <textarea
             id="sms-text"
             value={text}
-            onChange={(event) => setText(event.target.value.slice(0, MAX_LENGTH))}
+            onChange={(event) => {
+              setText(event.target.value.slice(0, MAX_LENGTH));
+              setInitialExplanation(undefined);
+            }}
             maxLength={MAX_LENGTH}
             rows={5}
             placeholder="Halimbawa: BDO ALERT: Your account has been suspended. Verify here…"
@@ -127,7 +134,9 @@ export function Scanner() {
         )}
       </div>
 
-      {verdict ? <ResultCard verdict={verdict} /> : null}
+      {verdict ? (
+        <ResultCard verdict={verdict} initialExplanation={initialExplanation} />
+      ) : null}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { CURATED_EXAMPLES } from '@/lib/engine/__fixtures__/messages';
+import { CURATED_EXAMPLES } from './engine/__fixtures__/messages';
 
 export interface Example {
   id: string;

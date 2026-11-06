@@ -48,3 +48,7 @@ next-env.d.ts
 
 # OCR runtime assets fetched by postinstall
 /public/tesseract/
+
+# playwright artifacts
+/test-results/
+/playwright-report/
