@@ -5,6 +5,7 @@ import { analyze } from '@/lib/engine';
 import type { Verdict } from '@/lib/engine/types';
 import { ExampleChips } from './ExampleChips';
 import { ResultCard } from './ResultCard';
+import { ScreenshotInput } from './ScreenshotInput';
 
 const MAX_LENGTH = 1000;
 
@@ -38,6 +39,12 @@ export function Scanner() {
     setVerdict(analyze(trimmed));
   }
 
+  function handleScreenshotText(ocrText: string) {
+    setText(ocrText.slice(0, MAX_LENGTH));
+    setError(null);
+    setTab('paste');
+  }
+
   return (
     <div>
       <div className="border border-rule bg-white/60">
@@ -54,14 +61,27 @@ export function Scanner() {
           </button>
           <button
             type="button"
-            disabled
+            onClick={() => setTab('screenshot')}
             aria-pressed={tab === 'screenshot'}
-            className="px-5 py-3 font-mono text-xs uppercase tracking-[0.15em] text-muted/50"
+            className={`px-5 py-3 font-mono text-xs uppercase tracking-[0.15em] ${
+              tab === 'screenshot' ? 'bg-ink text-paper' : 'text-muted hover:text-ink'
+            }`}
           >
             Screenshot
           </button>
         </div>
 
+        {tab === 'screenshot' ? (
+          <div className="p-5 sm:p-6">
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted">
+              I-upload ang screenshot ng text message
+            </p>
+            <ScreenshotInput onText={handleScreenshotText} />
+            <p className="mt-3 text-xs text-muted">
+              Babasahin sa browser mo ang larawan; hindi ito umaalis sa device mo.
+            </p>
+          </div>
+        ) : (
         <form onSubmit={handleSubmit} className="p-5 sm:p-6">
           <label
             htmlFor="sms-text"
@@ -104,6 +124,7 @@ export function Scanner() {
 
           <ExampleChips onSelect={handleExample} />
         </form>
+        )}
       </div>
 
       {verdict ? <ResultCard verdict={verdict} /> : null}
