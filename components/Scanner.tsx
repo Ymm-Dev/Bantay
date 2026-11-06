@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from 'react';
 import { analyze } from '@/lib/engine';
 import type { Verdict } from '@/lib/engine/types';
+import { ExampleChips } from './ExampleChips';
 import { ResultCard } from './ResultCard';
 
 const MAX_LENGTH = 1000;
@@ -26,6 +27,14 @@ export function Scanner() {
     }
 
     setError(null);
+    setVerdict(analyze(trimmed));
+  }
+
+  function handleExample(exampleText: string) {
+    const trimmed = exampleText.slice(0, MAX_LENGTH);
+    setText(trimmed);
+    setError(null);
+    setTab('paste');
     setVerdict(analyze(trimmed));
   }
 
@@ -92,6 +101,8 @@ export function Scanner() {
           >
             Suriin
           </button>
+
+          <ExampleChips onSelect={handleExample} />
         </form>
       </div>
 

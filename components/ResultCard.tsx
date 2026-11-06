@@ -1,8 +1,13 @@
-import { ShieldAlert, ShieldCheck, ShieldX } from 'lucide-react';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { Check, ShieldAlert, ShieldCheck, ShieldX } from 'lucide-react';
 import type { RiskLevel, Verdict } from '@/lib/engine/types';
+import { requestExplanation } from '@/lib/llm/client';
 import { buildTemplateExplanation } from '@/lib/llm/template';
 import { toExplanationInput } from '@/lib/llm/toExplanationInput';
 import { ScoreMeter } from './ScoreMeter';
+import { SignalList } from './SignalList';
 
 const META: Record<
   RiskLevel,
@@ -28,9 +33,49 @@ const META: Record<
   },
 };
 
-export function ResultCard({ verdict }: { verdict: Verdict }) {
+const CROSSFADE_MS = 180;
+
+export function ResultCard({
+  verdict,
+  initialExplanation,
+}: {
+  verdict: Verdict;
+  initialExplanation?: string;
+}) {
   const meta = META[verdict.level];
   const Icon = meta.Icon;
+
+  const [explanation, setExplanation] = useState(
+    initialExplanation ?? buildTemplateExplanation(toExplanationInput(verdict)),
+  );
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const input = toExplanationInput(verdict);
+    setExplanation(initialExplanation ?? buildTemplateExplanation(input));
+    setVisible(true);
+
+    if (initialExplanation || verdict.level === 'safe') return;
+
+    let cancelled = false;
+    let timer: number | undefined;
+
+    requestExplanation(input).then((result) => {
+      if (cancelled || !result || result.source !== 'llm') return;
+
+      setVisible(false);
+      timer = window.setTimeout(() => {
+        if (cancelled) return;
+        setExplanation(result.explanation);
+        setVisible(true);
+      }, CROSSFADE_MS);
+    });
+
+    return () => {
+      cancelled = true;
+      if (timer !== undefined) window.clearTimeout(timer);
+    };
+  }, [verdict, initialExplanation]);
 
   return (
     <section
@@ -53,16 +98,23 @@ export function ResultCard({ verdict }: { verdict: Verdict }) {
 
       <ScoreMeter score={verdict.score} level={verdict.level} />
 
-      <p data-testid="explanation" className="mt-5 text-base leading-relaxed text-ink">
-        {buildTemplateExplanation(toExplanationInput(verdict))}
-      </p>
+      <div className="mt-5 min-h-[6rem]">
+        <p
+          data-testid="explanation"
+          className={`text-base leading-relaxed text-ink transition-opacity duration-300 ${
+            visible ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          {explanation}
+        </p>
+      </div>
+
+      <SignalList signals={verdict.signals} />
 
       <ul className="mt-5 space-y-2 border-t border-rule pt-4">
         {verdict.advice.map((item) => (
           <li key={item} className="flex gap-2 text-sm leading-relaxed text-muted">
-            <span aria-hidden="true" className="font-mono text-ink">
-              —
-            </span>
+            <Check className="mt-0.5 h-4 w-4 shrink-0 text-ink" aria-hidden="true" />
             <span>{item}</span>
           </li>
         ))}
