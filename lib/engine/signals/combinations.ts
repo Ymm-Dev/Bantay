@@ -26,5 +26,16 @@ export function detectCombinationSignals(signals: Signal[]): Signal[] {
     });
   }
 
+  if (has('text.impersonation') && has('text.money_request')) {
+    combinations.push({
+      id: 'text.agency_scam_pattern',
+      category: 'text',
+      severity: 'high',
+      weight: 15,
+      title: 'Ahensya at pera pattern',
+      detail: 'Ginagamit ang pangalan ng ahensya para manghingi ng pera o bayad.',
+    });
+  }
+
   return combinations;
 }

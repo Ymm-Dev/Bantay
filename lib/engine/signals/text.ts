@@ -89,7 +89,13 @@ export function detectTextSignals(text: string): Signal[] {
     );
   }
 
-  if (IMPERSONATED_BRANDS.test(normalized) && VERIFY_DEMAND.test(normalized)) {
+  const impersonationDemand =
+    VERIFY_DEMAND.test(normalized) ||
+    MONEY_REQUEST.test(normalized) ||
+    THREAT.test(normalized) ||
+    URGENCY.test(normalized);
+
+  if (IMPERSONATED_BRANDS.test(normalized) && impersonationDemand) {
     add(
       makeSignal(
         'text.impersonation',
