@@ -7,7 +7,7 @@ reasons and next steps.
 > Hindi ito official na tool ng kahit anong bank o ahensya ng gobyerno. Gamitin ang
 > sariling judgement.
 
-Live URL: _add your Vercel URL here before publishing._
+Live URL: [https://bantay-mu.vercel.app/](https://bantay-mu.vercel.app/)
 
 ## Why this exists
 
