@@ -1,4 +1,5 @@
 import { SITE } from '@/lib/site';
+import { LogoMark } from './LogoMark';
 
 export function Header() {
   return (
@@ -6,10 +7,11 @@ export function Header() {
       <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-5 py-5">
         <a
           href="/"
-          className="font-mono text-sm uppercase tracking-[0.25em] text-ink"
+          className="flex items-center gap-2.5 font-mono text-sm uppercase tracking-[0.25em] text-ink"
           aria-label={`${SITE.name} home`}
         >
-          bantay
+          <LogoMark className="h-5 w-5 shrink-0" />
+          <span>bantay</span>
         </a>
         <a
           href={SITE.github}
